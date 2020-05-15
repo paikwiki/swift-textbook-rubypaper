@@ -1,4 +1,4 @@
-# Chapter 04. 흐름 제어 구문
+# Chapter 4. 흐름 제어 구문
 
 ## For, While 반복문
 
@@ -187,16 +187,17 @@ if #available(<플랫폼이름 버전>, <...>, <*>) {
 
 `#available` 구문의 인자값은 가변인자. 쉼표로 구분하여 플랫폼 이름과 OS 버전을 계속 나열할 수 있음. 나열이 끝나면 마지막은 `*`로 마감하여 인자값 입력이 모두 끝났음을 선언해야 함
 
-`````swift
+```swift
 if #available(iOS 9, OSX 10.10, watchOS 1, *) {
   // API 사용 구문
 } else {
   // API 사용 불가시 실패 처리
 }
+```
 
 switch 구문
 
-````swift
+```swift
 switch <비교 대상> {
   case <비교 패턴1> :
     <실행 구문>
@@ -205,7 +206,7 @@ switch <비교 대상> {
   defualt :
     <실행 구문>
 }
-`````
+```
 
 반드시 `default` 있어야 하지만 모든 패턴을 매칭시킬 수 있는 구문이 있으면 `default` 구문 생략 가능
 
@@ -244,11 +245,10 @@ outer : for i in 1...5 {
 }
 ```
 
-`````swift
+```swift
 /* 출력 */
 1 X 1 = 1
 1 X 2 = 2
-````swift
+```
 
-fallthrough: swich 구문에서 case 블록의 실행을 다음 case 블록으로 전달할 때 사용
-`````
+`fallthrough`: swich 구문에서 case 블록의 실행을 다음 case 블록으로 전달할 때 사용
