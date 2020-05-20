@@ -135,3 +135,163 @@ func foo(paramCount: inout Int) -> Int {
 var count = 30
 print(foo(paramCount: &count))
 print(count)
+
+// 7.3.1. 일급 함수의 특성
+
+func boo(age: Int, name: String) -> String {
+    return "\(name), \(age)"
+}
+
+func boo(height: Int, nick: String) -> String {
+    return "\(nick), \(height)"
+}
+
+let fn03 = boo(age:name:)
+let fn04 = boo(height:nick:)
+
+func desc() -> String {
+    return "this is desc()"
+}
+
+func pass() -> () -> String {
+    return desc
+}
+
+let p = pass()
+p() // "this is desc()"
+
+func incr(param: Int) -> Int {
+    return param + 1
+}
+
+func broker(base: Int, function fn: (Int) -> Int) -> Int {
+    return fn(base)
+}
+
+broker(base: 3, function: incr) // 4
+
+func successThrough() {
+    print("Success")
+}
+
+func failThrough() {
+    print("Fail")
+}
+
+func divide(base: Int, succes sCallBack: () -> Void, fail fCallBack: () -> Void) -> Int {
+    
+    guard base != 0 else {
+        fCallBack()
+        return 0
+    }
+    
+    defer {
+        sCallBack()
+    }
+    
+    return 100 / base
+}
+
+divide(base: 30, succes: successThrough, fail: failThrough)
+
+divide(base: 30,
+       succes: {
+        () -> Void in
+        print("Success")
+},
+       fail: {
+        () -> Void in
+        print("Fail")
+})
+
+// 7.3.2. 함수의 중첩
+
+func outer(base: Int) -> String {
+    func inner(inc: Int) -> String {
+        return "\(inc)를 반환합니다"
+    }
+    let result = inner(inc: base + 1)
+    return result
+}
+outer(base: 3) // "4를 반환합니다"
+
+// 7.4.1. 클로저 표현식
+
+let f = { () -> Void in
+    print("클로저가 실행됩니다")
+}
+f()
+
+({ () -> Void in
+    print("클로저가 실행됩니다")
+})()
+
+({ (s1: Int, s2: String) -> Void in
+    print("s1:\(s1), s2:\(s2)")
+})(1, "closure")
+
+var value = [1, 9, 5, 7, 3, 2]
+
+func order(s1: Int, s2: Int) -> Bool {
+    if s1 > s2 {
+        return true
+    } else {
+        return false
+    }
+}
+
+//value.sort(by: order)
+//
+//value.sort(by: {
+//    (s1: Int, s2: Int) -> Bool in
+//    if s1 > s2 {
+//        return true
+//    } else {
+//        return false
+//    }
+//})
+
+//value.sort(by: {(s1: Int, s2: Int) -> Bool in return s1 > s2})
+//value.sort(by: { s1, s2 in return s1 > s2 })
+//value.sort(by: { $0 > $1 })
+//value.sort(by: > )
+
+// 7.4.3. 트레일링 클로저(Trailing Closure)
+
+//value.sort() { (s1, s2) in
+//    return s1 > s2
+//}
+
+value.sort { (s1, s2) in
+    return s1 > s2
+}
+
+// 7.4.4. @escaping과 @autoescape
+
+func callback(fn: @escaping () -> Void) {
+    let f = fn // 클로저를 상수 f에 대입
+    f()
+}
+
+callback {
+    print("Exec closure")
+}
+
+func condition(stmt: @autoclosure () -> Bool) {
+    if stmt() == true {
+        print("결과가 참입니다.")
+    } else {
+        print("결과가 거짓입니다.")
+    }
+}
+condition(stmt: ( 4 > 2 ))
+
+var arrs = [String]()
+
+func addVars(fn: @autoclosure () -> Void) {
+    arrs = Array(repeating: "", count: 3)
+    fn()
+}
+
+addVars(fn: arrs.insert("KR", at: 1))
+print(arrs) // "["", "KR", "", ""]\n"
