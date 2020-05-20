@@ -320,16 +320,310 @@ inout 키워드 인자값 객체의 종류에 주의
 
 ## 7.3. 일급 객체로서의 함수
 
+일급 객체(First-Class Object)
+
+- 1960년대, 영국의 컴퓨터 과학자 크리스토퍼 스트래치(Christopher Strachey)가 처음 사용
+- 프로그램 언어 안에서 특정 종류의 객체가 일급의 지위를 가지는가에 대한 의미
+- 스위프트는 객체지향 언어이자 동시에 함수형 언어
+
 ## 7.3.1. 일급 함수의 특성
 
+일급 객체의 조건
+
+1. 객체가 런타임에도 생성이 가능해야 한다.
+1. 인자값으로 객체를 전달할 수 있어야 한다.
+1. 반환값으로 객체를 사용할 수 있어야 한다.
+1. 변수나 데이터 구조 안에 저장할 수 있어야 한다.
+1. 할당에 사용된 이름과 관계없이 고유한 구별이 가능해야 한다.
+
+함수가 위의 조건을 만족할 경우 이를 일급 함수(First-Class Function)이라고 하며, 그 언어를 함수형 언어로 분류함 -> 함수형 언어에서는 함수가 일급 객체로 대우받는다는 뜻
+
+일급 함수 특성1) 변수나 상수에 함수를 대입할 수 있음
+
+- '변수나 상수에 함수를 대입한다'는 것은 함수의 결과값을 대입하는 게 아니라 함수 자체를 대입하는 것
+- 변수도 함수처럼 인자값을 받아 실행이 가능하고, 값을 반환할 수도 있음
+- 함수의 호출 형식이 확장됨을 의미함
+
+함수 타입(Function Types)
+
+- 변수에 함수를 대입하면 일반적인 문자열, 정수, 배열 또는 딕셔너리와는 전혀 다른 타입이 됨
+- 변수에 정수를 대입하면 Int 타입이, 문자열을 대입하면 String 타입이 되듯이, 변수에 함수를 대입하면 함수 타입이 됨
+
+함수 타입의 표현
+
+```swift
+func boo(age: Int) -> String {
+  return "\(age)"
+}
+```
+
+위 함수를 함수 타입 형태로 표현하면 아래와 같음
+
+```swift
+(Int) -> String
+```
+
+위 함수를 상수에 할당한다면 상수의 타입 어노테이션을 포함한 할당 구문은 아래와 같음
+
+```swift
+let fn: (Int) -> String = boo
+```
+
+필요할 경우 타입 어노테이션을 적절히 사용하면, 같은 함수 이름을 사용하여 대입하더라도 서로 다른 결과를 가져올 수 있음
+
+```swift
+let fn01: (Int) -> String = boo // boo(age:)
+let fn02: (Int, String) -> String = boo // boo(age:name:)
+```
+
+일급함수의 특성2) 함수의 반환 타입으로 함수를 사용할 수 있음
+
+```swift
+func desc() -> String {
+    return "this is desc()"
+}
+
+func pass() -> () -> String {
+    return desc
+}
+
+let p = pass()
+p() // "this is desc()"
+```
+
+`pass` 함수의 반환 타입은 함수 타입인 `() -> String`
+
+일급함수의 특성3) 함수의 인자값으로 함수를 사용할 수 있음
+
+콜백 함수(Callback Function)
+
+- 특정 구문의 실행이 끝나면 시스템이 호출하도록 처리된 함수
+- 일반적으로 Ajax 통신을 위한 구문을 작성할 때, 콜백 함수를 등록
+
+함수를 입력받는 인자값은 함수 타입으로 정의되어야 한다.
+
+```swift
+func incr(param: Int) -> Int {
+    return param + 1
+}
+
+func broker(base: Int, function fn: (Int) -> Int) -> Int {
+    return fn(base)
+}
+
+broker(base: 3, function: incr) // 4
+```
+
+콜백 함수 사용 예시
+
+```swift
+func successThrough() {
+    print("Success")
+}
+
+func failThrough() {
+    print("Fail")
+}
+
+func divide(base: Int, succes sCallBack: () -> Void, fail fCallBack: () -> Void) -> Int {
+
+    guard base != 0 else {
+        fCallBack()
+        return 0
+    }
+
+    defer {
+        sCallBack()
+    }
+
+    return 100 / base
+}
+
+divide(base: 30, succes: successThrough, fail: failThrough)
+```
+
+defer 블록
+
+- 함수나 메소드에서 코드의 흐름과 상관ㅇ벗이 가장 마지막에 실행되는 블록
+- 지연 블록이라고 부르기도 함
+- 작성된 위치에 상관없이 함수의 종료 직전에 실행되므로, 종료 시점에 맞춰 처리해야할 구문이 있따면 defer 블록에 넣어두면 됨
+
+defer 블록의 특징
+
+1. defer 블록은 작성된 위치와 순서에 상관없이 함수가 종료되기 직전에 실행된다.
+1. defer 블록을 읽기 전에 함수의 실행이 종료될 경우 defer 블록은 실행되지 않는다.
+1. 하나의 함수나 메소드 내에서 defer 블록을 여러번 사용할 수 있다. 이때 가장 마지막에 작성된 defer 블록부터 역순으로 실행된다.
+1. defer 블록을 중첩해서 사용할 수 있다. 이때 바깥쪽 defer 블록부터 실행되며 가장 안쪽에 있는 defer 블록은 가장 마지막에 실행된다.
+
+익명함수
+
+- 재사용하지 않는 코드를 굳이 함수로 작성하는 것을 방지. 일회용
+- 스위프트에서는 익명함수를 클로저(Closure)라고 부름
+
+익명함수 예시
+
+```swift
+divide(base: 30, succes: successThrough, fail: failThrough)
+
+divide(base: 30,
+       succes: {
+        () -> Void in
+        print("Success")
+},
+       fail: {
+        () -> Void in
+        print("Fail")
+})
+```
+
 ## 7.3.2. 함수의 중첩
+
+중첩 함수(Nested Function)
+
+- 함수 내에 다른 함수를 작성해사 사용
+- 내부 함수(Inner Function), 외부 함수(Outer Function)으로 구분
+- 외부함수가 종료되면 내부함수도 존재하지 않게 됨(내부 함수의 생명 주기)
+- 함수의 은닉성: 내부함수는 외부함수를 거치지 않으면 접근할 수 없음
+
+```swift
+func outer(base: Int) -> String {
+    func inner(inc: Int) -> String {
+        return "\(inc)를 반환합니다"
+    }
+    let result = inner(inc: base + 1)
+    return result
+}
+outer(base: 3) // "4를 반환합니다"
+```
 
 ## 7.4. 클로저
 
 ## 7.4.1. 클로저 표현식
 
+클로저 예시
+
+```swift
+let f = { () -> Void in
+    print("클로저가 실행됩니다")
+}
+f()
+
+({ () -> Void in
+    print("클로저가 실행됩니다")
+})()
+
+({ (s1: Int, s2: String) -> Void in
+    print("s1:\(s1), s2:\(s2)")
+})(1, "closure")
+```
+
 ## 7.4.2. 클로저 표현식과 경량 문법
+
+클로저 축약해가는 과정 예시
+
+```swift
+var value = [1, 9, 5, 7, 3, 2]
+
+value.sort(by: {
+    (s1: Int, s2: Int) -> Bool in
+    if s1 > s2 {
+        return true
+    } else {
+        return false
+    }
+})
+
+value.sort(by: {(s1: Int, s2: Int) -> Bool in return s1 > s2})
+value.sort(by: { s1, s2 in return s1 > s2 })
+value.sort(by: { $0 > $1 })
+value.sort(by: > ) // 연산자 함수(Operator Functions)
+```
 
 ## 7.4.3. 트레일링 클로저(Trailing Closure)
 
+클로저를 인자값으로 주고 받을 때, 클로저 형식을 따라 코딩하다보면 알아보기 힘든 코드가 생실 수있음.
+
+트레일링 클로저
+
+- 인자값으로 클로저를 전달하는 특수한 상황에서 문법을 변형할 수 있도록 해줌
+- 함수의 마지막 값이 클로저일때 인자값 형식 대신 함수의 뒤에 꼬리처럼 붙일 수 있는 문법
+- 인자의 레이블은 생략됨
+
+앞의 함수를 트레일링 클로저로 변환한 예시
+
+```swift
+value.sort() { (s1, s2) in
+    return s1 > s2
+}
+
+// 더 축약한 코드
+value.sort { (s1, s2) in
+    return s1 > s2
+}
+```
+
+- 마지막 값이 클로저일 때만 사용 가능
+- 마지막 두개의 값이 연이어 클로저라 해도 마지막 클로저에만 트레일링 클로저 적용 가능
+
 ## 7.4.4. @escaping과 @autoescape
+
+클로저 사용시 주의사항
+
+- 함수의 인자값으로 전달된 클로저는 기본적으로 탈출 불가(non-escape) 성격
+- 해당 클로저는 1)함수 내에서 2)직접 실행을 위해서만 사용할 수 있음
+- 함수 내부라 해도 변수나 상수에 대입 불가(캡처(Capture)를 통한 클로저 노출 방지)
+- 중첩된 함수 내부에서도 사용할 수 없음
+
+@escaping 속성
+
+@escaping 속성을 활용하면 위 주의사항을 해제할 수 있음
+
+클로저를 상수에 대입하는 예시
+
+```swift
+func callback(fn: @escaping () -> Void) {
+    let f = fn // 클로저를 상수 f에 대입
+    f()
+}
+
+callback {
+    print("Exec closure")
+}
+```
+
+@autoescape
+
+@autoclosure
+
+```swift
+func condition(stmt: @autoclosure () -> Bool) {
+    if stmt() == true {
+        print("결과가 참입니다.")
+    } else {
+        print("결과가 거짓입니다.")
+    }
+}
+condition(stmt: ( 4 > 2 ))
+```
+
+클로저가 아닌 그 안의 내용만으로 인자값을 넣어주면 됨. 이렇게 전달된 인자값은 컴파일러가 자동으로 클로저 형태로 감싸서 처리해줌. 인자값을 중괄호({})가 아니라 괄호(()) 형태로 사용할 수 있도록 해준다.
+
+@autoclosure의 지연된 실행
+
+```swift
+var arrs = [String]()
+
+func addVars(fn: @autoclosure () -> Void) {
+    arrs = Array(repeating: "", count: 3)
+    fn()
+}
+
+addVars(fn: arrs.insert("KR", at: 1))
+print(arrs) // "["", "KR", "", ""]\n"
+```
+
+@autoclosure 속성이 부여된 인자값은 보기엔 일반 구문 형태지만 컴파일러에 의해 클로저, 즉 함수로 감싸지기 때문에 위와 같이 작성해도 addVars(fn:) 함수 실행전까지 실행되지 않는다. 실행 시점에는 이미 배열의 인덱스가 확장된 후이므로 오류도 발생하지 않는다.
+
+지연된 실행
+
+@autoclosure 속성이 인자값에 부여되면 해당 인자값은 컴파일러에 의해 클로저로 자동 래핑된다. 이 때문에 함수를 실행할 때에는 '{}' 형식의 클로저가 아니라 '()' 형식의 일반값을 인자값으로 사용해야 한다. 또한 인자값은 코드에 작성된 시점이 아니라 해당 클로저가 실행되는 시점에 맞춰서 실행된다.
