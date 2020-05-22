@@ -1264,7 +1264,7 @@ print(startup?.ceo?.woman) // Optional(false)
 
 옵셔널 체인으로 여러번 반복된다 해도 결과는 하나의 옵셔널 객체로만 반환
 
-- 옵셔널 체인 구문: `someCompamy?.getCEO()?.name`
-- 옵셔널 강제 해제: `someCompamy!.getCEO()!.name`
+- 옵셔널 체인 구문: `someCompany?.getCEO()?.name`
+- 옵셔널 강제 해제: `someCompany!.getCEO()!.name`
 
 모양은 비슷하지만, 강제 해제 연산자의 결과는 일반 타입이다. 옵셔널 체인은 nil이어도 오류가 발생하지 않지만, 옵셔널 강제 해제를 사용하면 nil일 경우 런타임 오류가 발생한다.
