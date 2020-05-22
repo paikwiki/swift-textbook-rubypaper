@@ -532,32 +532,739 @@ print(Boo.cFoo) // 10
 
 ## 8.3. 메소드
 
+메소드(Method)
+
+- 클래스나 구조체, 열거형과 같은 객체 내에서 함수가 선언될 경우 이를 메소드라고 통칭
+- 특정 타입의 객체 내부에서 사용하는 함수
+- 함수는 독립적인 기능 구현을 목적으로 하지만 메소드는 하나의 객체 내에 정의된 다른 메소드들과 협력하여 함수적 기능을 수행함
+
+메소드의 종류
+
+- 인스턴스 메소드(Instance Method): 인스턴스를 생성해야 사용할 수 있는 (캡슐화된) 메소드
+- 타입 메소드(Type Method)로 구분: 인스턴스를 생성하지 않아도 사용할 수 있는 메소드
+
+클래스의 메소드와 구조체의 메소드는 수정 여부에 대한 몇 가지 항목을 제외하면 비슷한 특징을 가진다.
+
 ### 8.3.1. 인스턴스 메소드
+
+인스턴스 메소드(Instance Method)
+
+- 객제의 인스턴스에 대한 기능적 측면을 제공
+- 인스턴스 메소드는 객체 내에서 정의된 다른 인스턴스 메소드나 인스턴스 프로퍼티에 접근 가능
+- 해당 메소드가 속한 인스턴스를 통해서만 호출할 수 있음(독립적으로 호출 할 수 없음)
+
+```swift
+struct Resolution2 {
+  var width = 0
+  var height = 0
+
+  func desc() -> String {
+    let desc = "이 해상도는 가로 \(self.width), 세로 \(self.height)로 구성됩니다."
+    return desc
+  }
+}
+
+class VideoMode2 {
+  var resolution = Resolution2()
+  var interlaced = 0.0
+  var frameRate = 0.0
+  var name: String?
+
+  func desc() -> String {
+    if self.name != nil {
+      let desc = "이 비디오 모드는 \(self.frameRate)의 프레임 비율로 표시됩니다."
+      return desc
+    }
+  }
+}
+```
+
+`desc()` 함수는 인스턴스 메소드이다. 메소드가 일반 함수와 다른 점
+
+1. 구조체와 클래스의 인스턴스에 소속됨
+1. 메소드 내에서 정의된 변수와 상수 뿐만 아니라 클래스 범위에서 정의된 프로퍼티도 모두 참조할 수 있음
+1. self 키워드를 사용할 수 있음
+
+```swift
+class Counter {
+    var count = 0
+
+    func increment() {
+        self.count += 1
+    }
+
+    func incrementBy(amount: Int) {
+        self.count += amount
+    }
+
+    func reset() {
+        self.count = 0
+    }
+}
+
+let counter = Counter()
+counter.increment() // count 1
+counter.incrementBy(amount: 5) // count 6
+counter.reset()
+```
+
+mutating 키워드
+
+- 구조체나 열거형의 인스턴스 메소드 내부에서 프로퍼티 값을 수정할 때는 반드시 메소드 앞에 `mutating`이라는 키워드를 추가해야 함
+- 구조체나 열거형 인스턴스를 상수로 할당받으면 `mutating` 메소드 호출 불가
+
+```swift
+struct Point {
+    var x = 0.0, y = 0.0
+    mutating func moveByX(x deltaX: Double, y deltaY: Double) {
+        self.x += deltaX
+        self.y += deltaY
+    }
+}
+var point = Point(x: 10.5, y: 12.0)
+point.moveByX(x: 3.0, y: 4.5)
+print("이제 새로운 좌표는 (\(point.x), \(point.y))입니다.")
+```
+
+클래스의 경우에는 `mutating` 키워드를 사용하지 않음
+
+```swift
+class Location {
+    var x = 0.0, y = 0.0
+
+    func moveByX(x deltaX: Double, y deltaY: Double) {
+        self.x += deltaX
+        self.y += deltaY
+    }
+}
+
+var loc = Location()
+loc.x = 10.5
+loc.y = 12.0
+loc.moveByX(x: 3.0, y: 4.5)
+
+print("이제 새로운 좌표는 (\(loc.x), \(loc.y))입니다.")
+```
 
 ### 8.3.2. 타입 메소드
 
+타입 메소드(Type Method)
+
+- 인스턴스를 생성하지 않고 클래스나 구조체 자체에서 호출할 수 있는 메소드
+- 구조체나 열거형 타입에서는 타입 메소드 선언할 때 `static` 키워드 사용
+- 하위 클래스에서 재정의 가능한 타입 메소드를 선언할 때는 `class` 키워드 사용
+
+```swift
+class Foo2 {
+  class func fooTypeMethod() {
+    // code..
+  }
+}
+
+let f = Foo2()
+//f.fooTypeMethod() // Error
+Foo2.fooTypeMethod()
+```
+
+타입 메소드 주의사항
+
+- 타입 메소드는 객체 타입 전체에 영향을 미침
+- 타입 메소드로 객체의 값을 변경하면 해당 객체 타입을 사용하는 모든 곳에서 변경이 적용
+- 인스턴스 프로퍼티를 참조할 수 없음
+
 ## 8.4. 상속
+
+상속(Inheritance)
+
+- 한 클래스가 다른 클래스에서 정의된 프로퍼티나 메소드를 물려받아 사용하는 것
+
+| 구분                                | 명칭1       | 명칭2       | 명칭3       |
+| ----------------------------------- | ----------- | ----------- | ----------- |
+| 프로퍼티와 메소드를 물려준 클래스   | 부모 클래스 | 상위 클래스 | 슈퍼 클래스 | 기본 클래스 |
+| 프로퍼티와 메소드를 물려받은 클래스 | 자식 클래스 | 하위 클래스 | 서브 클래스 | 파생 클래스 |
 
 ### 8.4.1. 서브클래싱
 
+서브클래싱(Subclassing)
+
+- 다른 클래스를 상속받아 새로운 클래스를 정의하는 것
+- 단일 상속만 지원됨
+- 여러 개를 상속받는 것처럼 보이는 경우(코코아 터치 프레임워크에 있음)도 첫번째 요소만 상속이고 나머지는 '구현(Implements)`임
+
+```swift
+class <클래스 이름>: <부모 클래스> {
+// 추가로 구현할 내용
+}
+```
+
+서브클래싱 예제
+
+```swift
+class A {
+  var name = "Class A"
+
+  var description: String {
+    return "This class name is \(self.name)."
+  }
+
+  func foo() {
+    print("\(self.name)'s method foo is called.")
+  }
+}
+
+let a = A()
+
+a.name // Class A
+a.description // Class A's method foo is called.
+a.foo()
+
+class B: A {
+  var prop = "Class B"
+
+  func boo() -> String {
+    return "Class B prop = \(self.prop)"
+  }
+}
+
+let b = B()
+b.prop // Class B
+b.boo() // Class B prop = Class B
+
+b.name // Class A
+b.foo() // Class A's method foo is called.
+
+b.name = "Class C"
+b.foo() // Class C's method foo is called.
+
+
+class Vehicle {
+  var currentSpeed = 0.0
+
+  var description: String {
+    return "시간당 \(self.currentSpeed)의 속도로 이동하고 있습니다"
+  }
+
+  func makeNoise() {
+    //
+  }
+}
+
+let baseVehicle = Vehicle()
+baseVehicle.description // 시간당 0.0의 속도로 이동하고 있습니다
+
+class Bicycle: Vehicle {
+  var hasBasket = false
+}
+
+let bicycle = Bicycle()
+bicycle.hasBasket = true
+bicycle.currentSpeed = 20.0
+
+print("bicycle: \(bicycle.description)") // bicycle: 시간당 20.0의 속도로 이동하고 있습니다
+
+class Tandem: Bicycle {
+  var passengers = 0
+}
+
+let tandem = Tandem()
+
+tandem.hasBasket = true
+tandem.passengers = 2
+tandem.currentSpeed = 14.0
+
+print("tandem: \(tandem.description)") // tandem: 시간당 14.0의 속도로 이동하고 있습니다
+```
+
+```txt
+╭────────────────╮   ╭─────────────╮   ╭──────────────╮
+│ Vehicle        │ ▶︎ │ Bicycle     │ ▶︎ │ Tandem       │
+╰─┬──────────────╯   ╰─┬───────────╯   ╰─┬────────────╯
+  ├ currentSpeed       ╰ hasBasket       ╰ passengers
+  ├ description
+  ╰ makeNoise()
+```
+
 ### 8.4.2. 오버라이딩
+
+오버라이딩(Overrriding)
+
+- 서브 클래스에서 재정의된 메소드나 프로퍼티가 부모 클래스로부터 물려받은 내용을 덮어쓰는 과정
+- 자기 자신 또는 자신을 서브클래싱한 하위 클래스에만 적용됨
+- `override` 키워드 사용
+- `override`키워드가 있으면 상위 클래스를 순차적으로 탐색, 요소를 발견하면 오버라이딩하고 없으면 오류를 출력
+- 프로퍼티를 오버라이딩 할때는 연산 프로퍼티 형태로 오버라이딩해야 함
+- 저장->저장 프로퍼티, 연산->저장 프로퍼티로 오버라이딩은 허용되지 않음
+- 연산 프로퍼티로 오버라이딩 하므로 get, set 구문을 모두 제공해야 함
+
+프로퍼티 오버라이딩시 허용되는 것
+
+1. 저장 프로퍼티를 get, set 구문이 있는 연산 프로퍼티로 오버라이딩
+1. get, set 구문이 모두 제공되는 연산 프로퍼티를 get, set 구문이 모두 제공되는 연산 프로퍼티로 오버라이딩
+1. get 구문만 제공되는 연산 프로퍼티를 get, set 구문이 모두 제공되는 연산 프로퍼티로 오버라이딩
+1. get 구문만 제공되는 연산 프로퍼티를 get 구문만 제공되는 연산 프로퍼티로 오버라이딩
+
+프로퍼티 오버라이딩시 허용되지 않는 것
+
+1. 저장 프로퍼티를 저장 프로퍼티로 오버라이딩
+1. get, set 구문과 관계없이 연산 프로퍼티를 저장 프로퍼티로 오버라이딩
+1. 저장 프로퍼티를 get 구문만 제공되는 연산 프로퍼티(=읽기 전용)로 오버라이딩
+1. get, set 구문을 모두 제공하는 연산 프로퍼티를 get 구문만 제공되는 연산 프로퍼티로 오버라이딩
+
+원칙: 프로퍼티 오버라이딩은 상위 클래스의 기능을 하위 클래스가 확장, 또는 변경하는 방식으로 진행되어야하며, 제한하는 방식으로 진행되어서는 안 된다.
+
+```swift
+class Car: Vehicle {
+  var gear = 0
+  var engineLevel = 0
+
+  override var currentSpeed: Double {
+    get {
+      return Double(self.engineLevel * 50)
+    }
+    set {
+      //
+    }
+  }
+  override var description: String {
+    get {
+      return "Car: engineLevel=\(self.engineLevel), so currentSpeed=\(self.currentSpeed)"
+    }
+    set {
+      print("New Value is \(newValue)")
+    }
+  }
+}
+
+let c = Car()
+
+c.engineLevel = 5
+c.currentSpeed // 250
+c.description = "New Class Car" // New Value is New Class Car
+
+print(c.description) // Car: engineLevel=5, so currentSpeed=250.0
+```
+
+프로퍼티 오버라이딩 과정에서 필요에 따라 프로퍼티 옵저버를 붙일 수 있다. 부모 클래스에서 프로퍼티가 상수나 읽기전용으로 선언된 게 아니라면 오버라이딩시 프로퍼티 옵저버 구문 추가 가능
+
+```swift
+class AutomationCar: Car {
+  override var currentSpeed: Double {
+    didSet {
+      self.gear = Int(currentSpeed / 10.0) + 1
+    }
+  }
+} // 이 함수의 동작이 이상함
+```
+
+메소드 오버라이딩
+
+- 반환 타입을 변경할 수 없음
+
+오버로딩(Overloading)
+
+- 같은 메소드 이름이지만 매개변수의 변화만으로 새로운 메소드를 만들어 적재할 수 있도록 지원하는 문법
+- 매개변수 타입이나 개수가 달라지면 오버로딩 문법에 의해 새로운 메소드로 인식
+- 이 경우 `override` 키워드는 없어야 함
+
+오버라이딩 방지하기
+
+- `final` 키워드 사용
+
+```swift
+final class Vehicle {
+
+}
+```
 
 ## 8.5. 타입 캐스팅
 
+자식 클래스는 본래의 타입 대신 부모 클래스 타입으로 선언하여 사용할 수 있다. 그 반대는 일반적으로 사용할 수 없다.
+
+예시
+
+```swift
+class Vehicle2 {
+  var currentSpeed = 0.0
+
+  func accelerate() {
+    self.currentSpeed += 1
+  }
+}
+
+class Car2: Vehicle2 {
+  var gear: Int {
+    return Int(self.currentSpeed / 20) + 1
+  }
+
+  func wiper() {
+    // wash window
+  }
+}
+
+let trans: Vehicle = Car()
+
+//let car: Car = Vehicle2() // Error
+
+class SUV: Car2 {
+  var fourWhell = false
+}
+
+let jeep: Vehicle2 = SUV()
+
+var list = [SUV]()
+list.append(SUV())
+
+var list2 = [Vehicle2]()
+
+list2.append(Vehicle2())
+list2.append(Car2())
+list2.append(SUV())
+```
+
 ### 8.5.1. 타입 비교 연산
+
+타입 비교 연산자: `is`
+
+```swift
+인스턴스(또는 변수, 상수) is 비교대상 타입
+```
+
+연산자의 연산 법칙
+
+1. 연산자 왼쪽 인스턴스의 타입이 연산자 오른쪽 비교대상 타입과 일치할 경우: true
+1. 연산자 왼쪽 인스턴스의 타입이 연산자 오른쪽 비교대상 타입의 하위 클래스일 경우: true
+1. 그 외 - false
+
+```swift
+SUV() is SUV // true, warn: 'is' test is always true
+SUV() is Car2 // true, warn: 'is' test is always true
+SUV() is Vehicle2 // true, warn: 'is' test is always true
+
+Car2() is Vehicle2 // true, warn: 'is' test is always true
+Car2() is SUV // false
+```
+
+```swift
+let myCar: Vehicle2 = SUV()
+
+if myCar is SUV {
+  print("myCar == SUV")
+} else {
+  print("myCar != SUV")
+}
+// myCar == SUV
+```
+
+원래 위의 코드는 false여야 하는데 true 반환됨. 이유는 타입 비교 연산자가 양쪽을 비교할 때 변수의 선언 타입이 아닌 그 안에 대입된 실제 값과 비교하기 때문이다.
+
+타입 비교 연산자를 이용해 타입을 비교할 때는 할당된 변수가 선언된 타입이 아니라 실제 할당된 타입이 비교된다는 것에 주의해야한다.
 
 ### 8.5.2. 타입 캐스팅 연산
 
+```swift
+let someCar: Vehicle = SUV()
+```
+
+위 코드는 SUV 클래스가 할당되어 있으나 컴파일러는 Vehicle 타입으로 간주한다. 그래서 Vehicle 클래스에 선언되지 않은 프로퍼티나 메소드를 사용할 수는 없다.
+
+someCar 상수를 이용하여 SUV() 클래스에 선언된 프로퍼티를 사용하고 싶거나 SUV 타입을 인자값으로 받는 함수에 사용하려면 "형변환"을 해야 한다.
+
+타입 캐스팅은 캐스팅 전 타입과 캐스팅 후 타입의 상하 관계에 따라 업/다운캐스팅으로 분류
+
+업 캐스팅(Up Casting)
+
+- 하위 클래스 타입을 상위 클래스 타입으로 변환할 때
+- 캐스팅하기 전 타입이 하위 클래스, 캐스팅한 후 타입이 상위 클래스일 때
+- 캐스팅한 결과, 캐스팅하기 전 타입보다 추상화될 때
+- 일반적으로 캐스팅 과정에서 오류가 발생할 가능성이 없음
+
+다운 캐스팅(Down Casting)
+
+- 상위 클래스 타입을 하위 클래스 타입으로 캐스팅할 때
+- 캐스팅하기 전 타입이 상위 클래스, 캐스팅한 후 타입이 하위 클래스
+- 캐스팅한 결과, 캐스팅하기 전 타입보다 구체화될 때
+- 캐스팅 과정에서 오류 발생할 가능성이 있음
+- 오류에 대한 처리 방식에 따라 옵셔널 캐스팅과 강제 캐스팅으로 나눠짐
+
+업캐스팅은 추상화, 다운캐스팅은 구체화라고 한다. 다운캐스팅 과정에서 오류 발생하면 nil 값을 반환한다. 다운 캐스팅은 이를 고려해 옵셔널 타입을 반환하는 옵셔널 캐스팅과, 반드시 성공한다는 전제로 일반타입을 반환하는 강제 캐스팅으로 나뉨
+
+캐스팅 형식
+
+```swift
+// Up casting
+객체 as 변환할 타입
+
+// Down casting
+객체 as? 변환할 타입(결과는 옵셔널 타입)
+객체 as! 변환할 타입(결과는 일반 타입)
+```
+
+업 캐스팅 예시
+
+```swift
+let anyCar: Car2 = SUV()
+let anyVehicle = anyCar as Vehicle2
+```
+
+다운 캐스팅 예시
+
+```swift
+let anySUV = anyCar as? SUV
+if anySUV != nil {
+    print("\(anySUV!) 캐스팅 성공") // __lldb_expr_69.SUV 캐스팅 성공
+}
+```
+
+타입 캐스팅은 앱 제작 과정에서 굉장히 많이 사용한다(Ex. 파운데이션 프레임워크).
+
 ### 8.5.3. Any, AnyObject
+
+Any, AnyObject
+
+- 상속 관계에 있지 않은 클래스 간에 타입 캐스팅을 할 수 있는 타입
+- 무엇이든 다 받아들일 수 있는 범용 타입
+- 가장 추상화된 클래스로 상속 관계가 직접 성립하지는 않으나 가장 상위 클래스라고 할 수 있음
+- "어쨌거나 클래스이기만 하면 된다"
+
+```swift
+var allCar: AnyObject = Car()
+allCar = SUV()
+
+func move(_ param: AnyObject) -> AnyObject {
+    return param
+}
+move(Car())
+move(Vehicle())
+
+var list3 = [AnyObject]()
+list3.append(Vehicle2())
+list3.append(Car2())
+list3.append(SUV())
+
+let obj: AnyObject = SUV()
+
+if let suv = obj as? SUV {
+    print("\(suv) 캐스팅이 성공하였습니다.") // __lldb_expr_75.SUV 캐스팅이 성공하였습니다.
+}
+```
+
+```swift
+var value: Any = "Sample String"
+value = 3
+value = false
+value = [1, 3, 5, 7, 9]
+value = {
+    print("함수가 실행됩니다")
+}
+
+func name(_ param: Any) {
+    print("\(param)")
+}
+name(3) // Int
+name(false) // Bool
+name([1,3,5,7,9]) // Array
+name {
+    print(">>>")
+} //(Function)
+
+var rows = [Any]()
+rows.append(3)
+rows.append(false)
+rows.append([1,3,5,7,9])
+rows.append {
+    print(">>>")
+}
+```
+
+Any 특징
+
+- 극단적으로 추상화된 타입이어서, Any 타입에 할당된 객체가 사용할수 있는 프로퍼티나 메소드는 아예 제공되지 않음
+- Any라는 타입으로 정의하면 모든 값을 제한 없이 할당할 수 있으나 값을 이용해 할 수 있는 것은 거의 없음
+- 정적인 타입을 동적인 타입으로 바꾸는 결과를 초래함
+- 컴파일러가 오류를 잘 잡아내지 못함
 
 ## 8.6. 초기화 구문
 
+초기화
+
+- 인스턴스를 생성해서 메모리 공간을 할당받는 과정
+- 모든 저장 프로퍼티는 인스턴스 생성 과정에서 초기화되어야 하며 이를 위해 초기값이 지정돼야 함
+
+구조체의 멤버와이즈 초기화 구문
+
+- 구조체 내부에 선언된 모든 저장 프로퍼티를 일괄로 외부의 값으로 초기활할 수 있는 구문
+- 클래스에는 멤버와이즈 초기화 구문이 제공되지 않음
+
+클래스의 초기화
+
+- 외부에서 프로퍼티의 초기값을 지정하려면 형식과 내용을 직접 정의해서 사용해야 함
+- 초기화 메소드(생성자(Constructor)) 필요
+
 ### 8.6.1. init 초기화 메소드
 
+초기화 메소드 형식
+
+```swift
+init(<매개변수>: <타입>, <매개변수> : <타입>, ...) {
+  // 매개변수 초기화
+  // 인스턴스 생성시 처리할 내용
+}
+```
+
+스위프트 초기화 메소드의 특성
+
+1. 초기화 메소드의 이름은 `init`으로 통일
+1. 매개변수의 개수, 이름, 타입은 임의로 정의할 수 있다.
+1. 매개변수의 이름과 개수, 타입이 서로 다른 여러 개의 초기화 메소드를 정의할 수 있다(오버로딩 가능).
+1. 정의된 초기화 메소드는 직접 호출되기도 하지만 대부분 인스턴스 생성시 간접 호출된다.
+
+```swift
+struct Resolution3 {
+  var width = 0
+  var height = 0
+
+  init(width: Int) {
+    self.width = width
+  }
+}
+
+class VideoMode3 {
+  var resolution = Resolution(width: 2048)
+  var interlaced = false
+  var frameRate = 0.0
+  var name: String?
+
+  init(interlaced: Bool, frameRate: Double) {
+    self.interlaced = interlaced
+    self.frameRate = frameRate
+  }
+}
+
+let resolution = Resolution3.init(width: 4096)
+let videoMode = VideoMode3.init(interlaced: true, frameRate: 40.0)
+```
+
+init 메소드에 기본 매개변수값 지정
+
+```swift
+class VideoMode {
+  var name: String?
+
+  init(name: String = "") {
+    self.name = name
+  }
+}
+```
+
 ### 8.6.2. 초기화 구문의 오버라이딩
+
+`super.init` 구문
+
+- 부모 클래스의 기본 초기화 구문에서 프로퍼티를 초기화 했을 경우 자식 클래스에서 기본 초기화 구문을 오버라이딩함으로써 부모 클래스 프로퍼티의 초기화 누락 방지
+- 오버라이딩된 초기화 구문 내부에 `super.init` 작성
+
+```swift
+class Base {
+  var baseValue: Double
+  init(inputValue: Double) {
+    self.baseValue = inputValue
+  }
+}
+
+class ExBase: Base {
+  override init(inputValue: Double) {
+    super.init(inputValue: 10.5)
+  }
+}
+```
+
+초기화 구문 델리게이션(Initializer Delegation)
+
+- 연쇄적으로 오버라이딩된 자식 클래스의 초기화 구문에서 부모 클래스의 초기화 구문에 대한 호출이 발생하는 것
+- 기본 초기화 구문을 제외한 나머지 초기화 구문을 오버라이딩 할 때는 반드시 부모 클래스의 초기화 구문을 호출해서 델리게이션 처리를 해줘야 함
+
+부모 클래스에 기본 초기화 구문만 정의되어 있거나, 아예 명시적으로 정의되지 않은 상태에서 자식 클래스가 오버라이딩 할때는 `super.init()` 구문을 호출하지 않아도 호출된다. 이때는 자식클래스부터 역순으로 초기화 구문이 실행된다.
 
 ## 8.7. 옵셔널 체인
 
 ### 8.7.1. 옵셔널 타입의 문제점
 
+값을 쓰려면 옵셔널 체크를 계속 해야한다.
+
+예시
+
+```swift
+struct Human {
+  var name: String?
+  var woman: Bool = true
+}
+
+var girl: Human? = Human(name: "Jane", woman: true)
+
+if girl != nil {
+  if girl!.name != nil {
+    print("name is \(girl!.name!)") // name is Jane
+  }
+}
+
+if let g = girl {
+  if let name = g.name {
+    print("name is \(name)") // name is Jane
+  }
+}
+
+struct Company {
+  var ceo: Human?
+  var companyName: String?
+}
+var startup: Company? = Company(ceo: Human(name: "나대표", woman: false), companyName: "루비페이퍼")
+
+if let company = startup {
+  if let ceo = company.ceo {
+    if let name = ceo.name {
+      print("CEO is \(name)")
+    }
+  }
+}
+```
+
 ### 8.7.2. 옵셔널 체인
+
+옵셔널 체인(Optional Chain)
+
+- 옵셔널 타입으로 정의된 값이 하위 프로퍼티나 메소드를 가지고 있을 때, 이 요소들을 if 구문을 쓰지 않고도 간결하게 사용할 수 있는 코드를 작성하기 위해 도입
+- 객체가 nil인 상황에서 안전성 검사를 하지 않고 메소드나 프로퍼티를 호출하더라도 오류가 발생하지 않을 수 있는 문법을 옵셔널 스타일을 이용하여 구현
+
+옵셔널 타입의 startup 변수 하위의 ceo 프로퍼티를 참조하는 코드
+
+```swift
+startup?.ceo
+```
+
+이름을 참조하려면?
+
+```swift
+startup?.ceo?.name
+```
+
+```swift
+if let name = startup?.ceo?.name {
+    print("CEO is \(name)")
+}
+```
+
+옵셔널 체인의 특징
+
+1. 옵셔널 체인으로 참조된 값은 무조건 옵셔널 타입으로 반환된다.
+1. 옵셔널 체인 과정에서 옵셔널 타입들이 여러번 겹쳐 있더라도 중첩되지 않고 한 번만 처리된다.
+
+```swift
+print(startup?.ceo?.woman) // Optional(false)
+```
+
+옵셔널 체인으로 여러번 반복된다 해도 결과는 하나의 옵셔널 객체로만 반환
+
+- 옵셔널 체인 구문: `someCompamy?.getCEO()?.name`
+- 옵셔널 강제 해제: `someCompamy!.getCEO()!.name`
+
+모양은 비슷하지만, 강제 해제 연산자의 결과는 일반 타입이다. 옵셔널 체인은 nil이어도 오류가 발생하지 않지만, 옵셔널 강제 해제를 사용하면 nil일 경우 런타임 오류가 발생한다.
