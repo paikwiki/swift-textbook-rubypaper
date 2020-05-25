@@ -296,8 +296,143 @@ class Car: FuelPumpDelegate {
 
 // 10.4.1. 확장 구문과 프로토콜
 
+class Woman {
+    var name: String?
+    
+    init(name: String = "Jane") {
+        self.name = name
+    }
+}
+
+protocol Job {
+    func doWork()
+}
+
+extension Woman: Job {
+    func doWork() {
+        print("\(self.name!) works.")
+    }
+}
+
+let woman = Woman(name: "Dev")
+woman.doWork()
+
 // 10.4.2. 프로토콜의 상속
+
+protocol C: A, B {
+    func doC()
+}
+
+class ABC: C {
+    func doA() {
+    }
+    func doB() {
+    }
+    func doC() {
+    }
+}
+
+let abc: C = ABC()
+// abc.doA(), abc.doB(), abc.doC()
+
+let a: A = ABC()
+// a.doA()
+
+let ab: A & B = ABC()
+// ab.doA(), ab.doB()
+
+let abc2: A & B & C = ABC()
+// abc2.doA(), abc2.doB(), abc2.doC()
+
+abc is C // true
+abc is A & B // true
+abc is A // true
+abc is B // true
+a is C // true
+a is B // true
+ab is C // true
+abc2 is A & B & C // true
+
+protocol Machine {
+    func join()
+}
+
+protocol Wheel2: Machine {
+    func lotate()
+    
+    init(name: String, currentSpeed: Double)
+}
+
+class Vehicle2 {
+    var currentSpeed = 0.0
+    var name = ""
+    
+    init(name: String, currentSpeed: Double) {
+        self.name = name
+        self.currentSpeed = currentSpeed
+    }
+}
+
+class Car2: Vehicle2, Wheel2 {
+    required override init(name: String, currentSpeed: Double = 0.0) {
+        super.init(name: name, currentSpeed: currentSpeed)
+    }
+    
+    func join() {
+    }
+    
+    func lotate() {
+        print("\(self.name)의 바퀴가 회전합니다.")
+    }
+}
+
+class Carpet: Vehicle2, Machine {
+    func join() {
+    }
+}
+
+var translist = [Vehicle2]()
+translist.append(Car2(name: "car", currentSpeed: 10.0))
+translist.append(Carpet(name: "carpet", currentSpeed: 15.0))
+
+for trans in translist {
+    if let obj = trans as? Wheel2 {
+        obj.lotate()
+    } else {
+        print("\(trans.name)의 하위 타입 변환이 실패했습니다.")
+    }
+}
 
 // 10.4.3. 클래스 전용 프로토콜
 
 // 10.4.4. optional
+
+import Foundation
+
+@objc protocol MsgDelegate {
+    @objc optional func onRecieve(new:Int)
+}
+
+class MsgCenter {
+    var delegate: MsgDelegate?
+    var newMsg: Int = 0
+    
+    func msgCheck() {
+        if newMsg > 0 {
+            self.delegate?.onRecieve?(new: self.newMsg)
+            self.newMsg = 0
+        }
+    }
+}
+
+class Watch: MsgDelegate {
+    var msgCenter: MsgCenter?
+    
+    init(msgCenter: MsgCenter) {
+        self.msgCenter = msgCenter
+    }
+    
+    func onRecieve(new: Int) {
+        print("\(new) masseges")
+    }
+}
