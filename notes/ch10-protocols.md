@@ -230,17 +230,17 @@ class Child: Parent, Init {
 
 ```swift
 protocol Init2 {
-    func getValue()
+  func getValue()
 }
 
 class Parent2 {
-    func getValue() {
-    }
+  func getValue() {
+  }
 }
 
 class Child2: Parent2, Init2 {
-    override func getValue() {
-    }
+  override func getValue() {
+  }
 }
 ```
 
@@ -256,28 +256,28 @@ class Child2: Parent2, Init2 {
 
 ```swift
 protocol Wheel {
-    func spin()
-    func hold()
+  func spin()
+  func hold()
 }
 
 class Bicycle: Wheel {
-    var moveState = false
+  var moveState = false
 
-    func spin() {
-        self.pedal()
-    }
+  func spin() {
+    self.pedal()
+  }
 
-    func hold() {
-        self.pullBreak()
-    }
+  func hold() {
+    self.pullBreak()
+  }
 
-    func pedal() {
-        self.moveState = true
-    }
+  func pedal() {
+    self.moveState = true
+  }
 
-    func pullBreak() {
-        self.moveState = false
-    }
+  func pullBreak() {
+    self.moveState = false
+  }
 }
 
 let trans = Bicycle()
@@ -296,23 +296,23 @@ trans2.hold()
 
 ```swift
 protocol A {
-    func doA()
+  func doA()
 }
 
 protocol B {
-    func doB()
+  func doB()
 }
 
 class Impl: A, B {
-    func doA() {
-    }
+  func doA() {
+  }
 
-    func doB() {
-    }
+  func doB() {
+  }
 
-    func desc() -> String {
-        return "Class instance method"
-    }
+  func desc() -> String {
+    return "Class instance method"
+  }
 }
 
 var ipl: A & B = Impl()
@@ -400,8 +400,206 @@ class Car: FuelPumpDelegate {
 
 ### 10.4.1. 확장 구문과 프로토콜
 
+익스텐션에서 프로토콜 구현 형식
+
+```swift
+extension <기존 객체> : <구현할 프로토콜1>, <구현할 프로토콜2> ... {
+  // 프로토콜 요소에 대한 구현 내용
+}
+```
+
+익스텐션의 프로토콜 적용 예시
+
+```swift
+class Woman {
+  var name: String?
+
+  init(name: String = "Jane") {
+    self.name = name
+  }
+}
+
+protocol Job {
+  func doWork()
+}
+
+extension Woman: Job {
+  func doWork() {
+    print("\(self.name!) works.")
+  }
+}
+
+let woman = Woman(name: "Dev")
+woman.doWork()
+```
+
 ### 10.4.2. 프로토콜의 상속
+
+프로토콜 상속 예시
+
+```swift
+protocol C: A, B {
+  func doC()
+}
+
+class ABC: C {
+  func doA() {
+  }
+  func doB() {
+  }
+  func doC() {
+  }
+}
+
+let abc: C = ABC()
+// abc.doA(), abc.doB(), abc.doC()
+
+let a: A = ABC()
+// a.doA()
+
+let ab: A & B = ABC()
+// ab.doA(), ab.doB()
+
+let abc2: A & B & C = ABC()
+// abc2.doA(), abc2.doB(), abc2.doC()
+
+abc is C // true
+abc is A & B // true
+abc is A // true
+abc is B // true
+a is C // true
+a is B // true
+ab is C // true
+abc2 is A & B & C // true
+```
+
+`as` 연산자는 `is` 연산자와 달리 제한된 범위 내에서 타입을 캐스팅할 수 있도록 해준다. 제한된 범위는 다음과 같다.
+
+1. 실제로 할당된 인스턴스 타입
+1. 인스턴스가 구현한 프로토콜 타입
+1. 클래스가 상속을 받았을 경우 모든 상위 클래스
+1. 프로토콜 타입이 상속을 받았을 경우 모든 상위 프로토콜
+
+상위 타입으로의 캐스팅은 문제가 되지 않으나 하위 타입으로 캐스팅할 경우, 일반 캐스팅 연산자가 아닌 옵셔널 타입으로 캐스팅 결과를 반환하는 옵셔널 캐스팅(`as?`) 연산자나 캐스팅 실패 가능성을 감안하고서라도 일반 타입으로 캐스팅하는 강제 캐스팅(`as!`) 연산자 중에서 선택해야 한다.
+
+```swift
+protocol Machine {
+  func join()
+}
+
+protocol Wheel2: Machine {
+  func lotate()
+
+  init(name: String, currentSpeed: Double)
+}
+
+class Vehicle2 {
+  var currentSpeed = 0.0
+  var name = ""
+
+  init(name: String, currentSpeed: Double) {
+    self.name = name
+    self.currentSpeed = currentSpeed
+  }
+}
+
+class Car2: Vehicle2, Wheel2 {
+  required override init(name: String, currentSpeed: Double = 0.0) {
+    super.init(name: name, currentSpeed: currentSpeed)
+  }
+
+  func join() {
+  }
+
+  func lotate() {
+    print("\(self.name)의 바퀴가 회전합니다.")
+  }
+}
+
+class Carpet: Vehicle2, Machine {
+  func join() {
+  }
+}
+
+var translist = [Vehicle2]()
+translist.append(Car2(name: "car", currentSpeed: 10.0))
+translist.append(Carpet(name: "carpet", currentSpeed: 15.0))
+
+for trans in translist {
+  if let obj = trans as? Wheel2 {
+    obj.lotate()
+  } else {
+    print("\(trans.name)의 하위 타입 변환이 실패했습니다.")
+  }
+}
+
+// car의 바퀴가 회전합니다.
+// carpet의 하위 타입 변환이 실패했습니다.
+```
 
 ### 10.4.3. 클래스 전용 프로토콜
 
+클래스 전용 프로토콜을 만들 때는 `class` 키워드를 사용한다.
+
+클래스 전용 프로토콜 예시
+
+```swift
+protocol SomeClassOnlyProtocol: class {
+  // code
+}
+```
+
+- `mutating` 키워드 사용 불가(클래스에서는 사용할 필요가 없으므로)
+- static 키워드는 제약없이 사용 가능
+
+프로토콜이 다른 클래스를 상속받는 예시
+
+```swift
+protocol SomeClassOnlyProtocol: class, Wheel, Machine {
+  // code
+}
+```
+
 ### 10.4.4. optional
+
+프로토콜 구현시 메소드를 선택적으로 구현할 수 있도록 할 수 있다.
+
+선택적 요청(Optional Requirement)
+
+- 프로토콜의 개별 요소에 `optional`키워드를 사용하여 프로퍼티나 메소드, 초기화 구문 앞에 표시
+- 프로토콜 앞에 `@objc` 표시(파운데이션 프레임워크에 정의된 어노테이션의 일종으로 이것이 붙은 코드나 객체를 오브젝티브-C 코드에서도 참조할 수 있도록 노출함을 의미)
+- `@objc` 어노테이션이 붙은 프로토콜은 구조체나 열거형 등에서 구현할 수 없음. 클래스만 구현
+
+```swift
+import Foundation
+
+@objc protocol MsgDelegate {
+  @objc optional func onRecieve(new:Int)
+}
+
+class MsgCenter {
+  var delegate: MsgDelegate?
+  var newMsg: Int = 0
+
+  func msgCheck() {
+    if newMsg > 0 {
+      self.delegate?.onRecieve?(new: self.newMsg)
+      self.newMsg = 0
+    }
+  }
+}
+
+class Watch: MsgDelegate {
+  var msgCenter: MsgCenter?
+
+  init(msgCenter: MsgCenter) {
+    self.msgCenter = msgCenter
+  }
+
+  func onRecieve(new: Int) {
+    print("\(new) masseges")
+  }
+}
+```
+
+위에서 메소드의 결과값이 옵셔널이 아니라 메소드 자체가 옵셔널이므로 메소드와 괄호 사이에 ? 연산자가 필요하다.
