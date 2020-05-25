@@ -26,7 +26,7 @@
 |  08 | 구조체와 클래스: 객체지향 스위프트             | [:memo:ch08](./notes/ch08-struct-and-class.md) | 2020.05.22. |
 |  09 | 열거형과 익스텐션: 코드의 한계를 넓혀주는 문법  | [:memo:ch09](./notes/ch09-enumerations-and-extensions.md) | 2020.05.23. |
 |  10 | 프로토콜: 객체의 설계도                         | [:memo:ch10](./notes/ch10-protocols.md) |2020.05.24. |
-|  11 | 오류 처리: 스위프트는 어떻게 오류를 처리할까요? |      |      |
+|  11 | 오류 처리: 스위프트는 어떻게 오류를 처리할까요? | [:memo:ch11](notes/ch11-error-handling.md) | 2020.05.25. |
 
 ## 저작권 안내
 
