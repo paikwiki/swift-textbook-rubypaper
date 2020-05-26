@@ -104,7 +104,7 @@ print("n = \(n)")
 n = 1024
 ```
 
-repeat~while문. 다른 언어에서의 do~while문과 유사함.
+`repeat ~ while`문. 다른 언어에서의 `do ~ while`문과 유사함.
 
 ```swift
 repeat {
