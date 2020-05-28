@@ -26,7 +26,7 @@ let num = Int("Swift") // nil
 1. nil이 아닌 값
 2. nil 값
 
-2번 nil이 아닌 값은 옵셔널이라는 객체로 둘러싸인 상태로 반환
+"nil이 아닌 값"은 옵셔널이라는 객체로 둘러싸인 상태로 반환된다.
 
 옵셔널 래핑(Optional Wrapping)
 
@@ -107,8 +107,10 @@ var intFromStr = Int(str)
 if intFromStr != nil {
   print("값이 변환됐습니다. 변환된 값은 \(intFromStr!)입니다.")
 } else {
-  print("값 변환에 실패하였습니다")
+  print("값 변환에 실패했습니다")
 }
+
+// 값 변환에 실패했습니다
 ```
 
 ### 6.2.2. 옵셔널 바인딩
@@ -120,12 +122,6 @@ if intFromStr != nil {
 ```swift
 var str = "Swift"
 
-if let intFromStr = Int(str) {
-  print("값이 변환됐습니다. 변환된 값은 \(intFromStr)입니다")
-} else {
-  print("값 변환에 실패했습니다")
-}
-
 func intStr(str: String) {
 
   guard let intFromStr = Int(str) else {
@@ -135,6 +131,9 @@ func intStr(str: String) {
 
   print("값이 변환됐습니다. 변환된 값은 \(intFromStr)입니다")
 }
+
+intStr(str: str)
+// 값 변환에 실패했습니다
 ```
 
 ### 6.2.3. 컴파일러에 의한 옵셔널 자동 해제
