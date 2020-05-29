@@ -54,7 +54,7 @@ class 클래스_이름 {
 
 ### 8.1.4. 초기화
 
-스위프트에서 옵셔널 타입으로 선언되지 않은 모든 프로퍼티는 명시적으로 초기화해 주어야 한다. 프로퍼티가 없을 경우 컴파일 오류 발생
+스위프트에서 옵셔널 타입으로 선언되지 않은 모든 프로퍼티는 명시적으로 초기화해 주어야 한다. 프로퍼티 초기화가 없을 경우 컴파일 오류 발생
 
 명시적 초기화
 
@@ -173,7 +173,7 @@ if (vs === ds) {
 역할에 따른 프로퍼티의 종류
 
 - 저장 프로퍼티(stored property)
-- 연산 프로퍼티(Computed property)
+- 연산 프로퍼티(computed property)
 
 저장 프로퍼티
 
@@ -426,7 +426,7 @@ print("square.centerX = \(square.origin.x), square.centerY = \(square.origin.y)"
 
 옵저버 정의 구문
 
-```swift
+```txt
 // willSet
 var <프로퍼티평> : <타입> [ = <초기값> ] {
   willSet [ (<인자명>) ] {
@@ -925,7 +925,7 @@ list2.append(SUV())
 
 타입 비교 연산자: `is`
 
-```swift
+```txt
 인스턴스(또는 변수, 상수) is 비교대상 타입
 ```
 
@@ -990,7 +990,7 @@ someCar 상수를 이용하여 SUV() 클래스에 선언된 프로퍼티를 사�
 
 캐스팅 형식
 
-```swift
+```txt
 // Up casting
 객체 as 변환할 타입
 
