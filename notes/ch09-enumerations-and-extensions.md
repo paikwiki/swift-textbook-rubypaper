@@ -88,7 +88,7 @@ case .west :
 // east
 ```
 
-열거형의 모든 멤버를 switch 문에 작성하면 default 구문 생략 가능
+열거형의 모든 멤버를 switch 문에 작성하면 default 구문을 생략할 수 있다.
 
 ### 9.1.2. 멤버와 값의 분리
 
@@ -108,7 +108,7 @@ HTTPCode.INCORRECT_PAGE.rawValue // 404
 HTTPCode.SERVER_ERROR.rawValue // 500
 ```
 
-타입 어노테이션에 Int를, 첫번째 멤버에만 값을 주면 값이 자동 할당 된다.
+타입 어노테이션에 Int를 지정하고, 첫번째 멤버에 값을 주면 나머지 멤버에 대한 값이 자동 할당된다.
 
 ```swift
 enum Rank: Int {
@@ -123,7 +123,7 @@ Rank.four.rawValue // 4
 Rank.five.rawValue // 5
 ```
 
-연관 값(Associated Values): 선언시점에서 멤버와 값을 정의하지 않고 사용 시점에서 보조 값을 설정할 수 있음
+연관 값(Associated Values)으로 선언시점에서 멤버와 값을 정의하지 않고 사용 시점에서 보조 값을 설정할 수 있다.
 
 ```swift
 enum ImageFormat {
@@ -136,7 +136,7 @@ var newImage = ImageFormat.PNG(true)
 newImage = .GIF(256, false)
 ```
 
-열거형은 클래스나 구조체처럼 연산 프로퍼티와 메소드 정의도 가능함
+열거형은 클래스나 구조체처럼 연산 프로퍼티와 메소드 정의도 가능하다
 
 ### 9.1.3. 열거형의 활용
 
@@ -227,7 +227,7 @@ d.repeatRun {
 // hello2
 ```
 
-`mutating`을 이용해 인스턴스 자신을 수정하도록 할 수 있음
+`mutating`을 이용해 인스턴스 자신을 수정하도록 할 수 있다.
 
 ```swift
 extension Int {
@@ -240,7 +240,7 @@ var value = 3
 value.square() // value = 9
 ```
 
-`let`으로 선언하면 상수가 되므로 오류 발생함
+`let`으로 선언하면 상수가 되므로 오류 발생한다.
 
 주의사항
 
